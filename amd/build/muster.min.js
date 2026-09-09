@@ -1,0 +1,158 @@
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * qtype_muster ruudustiku klõpsu-interaktsioon + taustapildi lüliti.
+ *
+ * Loogika: õpetaja/õpilane valib paletist ühe elemendi (või kustutamise
+ * tööriista), seejärel klõpsab ruudustiku ruudul, mis täidetakse/tühjendatakse
+ * vastavalt. Kogu olek hoitakse varjatud sisendväljas JSON-kujul ja seda
+ * uuendab Moodle'i tavapärane quiz autosave / vormi esitus (vt question.php
+ * ja renderer.php kommentaarid).
+ *
+ * TÄIDETUD RUUDUD ON ALATI TÄISOPAAKSED (ka taustapildiga ruudustikul) -
+ * varasem katse muuta need taustapildi puhul pooleldi läbipaistvaks
+ * eemaldati, kuna täidetud ruut peab katma taustapilti, mitte läbi
+ * paistma (vt renderer.php sama põhimõtet).
+ *
+ * KRIITILINE: kustutamisel EI tohi kasutada cell.removeAttribute('style'),
+ * kuna ruudu suurus (cellsize, õpetaja määratud) on samuti inline-stiilis
+ * (vt renderer.php render_cell()) - kogu style eemaldamine kaotaks ka
+ * ruudu suuruse, mitte ainult värvi.
+ *
+ * @module     qtype_muster/muster
+ * @copyright  2026 Urmas Vessin
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+define([], function() {
+
+    /**
+     * Algatab taustapildi näita/peida lüliti ühe ruudustiku jaoks.
+     *
+     * Lüliti lisab/eemaldab konteinerilt klassi "muster-bg-hidden", mis
+     * (vt styles.css) juhib KAHTE asja korraga: pildi enda nähtavust JA
+     * tühjade ruutude läbipaistvust. See on kriitiline - kui muudetaks
+     * ainult pildi nähtavust, jääksid ruudud endiselt seda katma ja pilti
+     * ei oleks kunagi näha, sõltumata lüliti olekust.
+     *
+     * @param {Element} container ".muster-grid-outer" element
+     */
+    var initBackgroundToggle = function(container) {
+        var checkbox = container.querySelector('.muster-bg-toggle-checkbox');
+        if (!checkbox) {
+            return;
+        }
+        checkbox.addEventListener('change', function() {
+            container.classList.toggle('muster-bg-hidden', !checkbox.checked);
+        });
+    };
+
+    /**
+     * Algatab ühe küsimuse ruudustiku interaktiivsuse.
+     *
+     * @param {String} inputid varjatud sisendvälja (gridstate) id
+     */
+    var init = function(inputid) {
+        var input = document.getElementById(inputid);
+        if (!input) {
+            return;
+        }
+        var grid = document.querySelector('[data-inputid="' + inputid + '"]');
+        if (!grid) {
+            return;
+        }
+
+        var outer = grid.closest('.muster-grid-outer') || grid.parentNode;
+        initBackgroundToggle(outer);
+
+        if (grid.getAttribute('data-readonly') === '1') {
+            return;
+        }
+
+        // NB: grid.parentNode on nüüd ".muster-grid-outer" (ümbritseb
+        // ruudustikku + taustapildi lülitit), MITTE see jagatud konteiner,
+        // kus asub ka palett (".muster-palette" on "outer" enda vend, mitte
+        // laps) - seetõttu tuleb palett leida "outer" vanemast, mitte
+        // "grid" enda otsesest vanemast.
+        var container = outer.parentNode;
+        var palette = container.querySelector('[data-role="muster-palette"]');
+        var selectedPaletteId = null;
+
+        var state = {};
+        try {
+            state = JSON.parse(input.value || '{}');
+        } catch (e) {
+            state = {};
+        }
+
+        if (palette) {
+            palette.querySelectorAll('.muster-palette-item').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    palette.querySelectorAll('.muster-palette-item').forEach(function(b) {
+                        b.classList.remove('muster-selected');
+                    });
+                    btn.classList.add('muster-selected');
+                    selectedPaletteId = btn.getAttribute('data-paletteid');
+                });
+            });
+        }
+
+        grid.querySelectorAll('.muster-cell').forEach(function(cell) {
+            cell.addEventListener('click', function() {
+                if (selectedPaletteId === null) {
+                    // Palett pole veel valitud - ei tee midagi.
+                    return;
+                }
+                var key = cell.getAttribute('data-row') + '_' + cell.getAttribute('data-col');
+
+                if (selectedPaletteId === '') {
+                    // Kustutamise tööriist - eemaldame ainult värvi/sisu,
+                    // MITTE kogu style't (see sisaldab ka ruudu suurust).
+                    delete state[key];
+                    cell.style.backgroundColor = '';
+                    cell.removeAttribute('data-paletteid');
+                    cell.innerHTML = '';
+                } else {
+                    state[key] = selectedPaletteId;
+                    var sourcebtn = palette.querySelector(
+                        '.muster-palette-item[data-paletteid="' + selectedPaletteId + '"]');
+                    cell.setAttribute('data-paletteid', selectedPaletteId);
+                    cell.style.backgroundColor = '';
+                    cell.innerHTML = '';
+                    if (sourcebtn && sourcebtn.style.backgroundColor) {
+                        // Alati täisopaakne - katab ka taustapilti.
+                        cell.style.backgroundColor = sourcebtn.style.backgroundColor;
+                    } else if (sourcebtn) {
+                        var img = sourcebtn.querySelector('img');
+                        if (img) {
+                            cell.innerHTML = img.outerHTML;
+                        } else {
+                            cell.textContent = sourcebtn.textContent;
+                        }
+                    }
+                }
+
+                input.value = JSON.stringify(state);
+                // Vallandab 'change' sündmuse, et Moodle'i autosave/vormi
+                // jälgimine (kui on) registreeriks muudatuse.
+                input.dispatchEvent(new Event('change', {bubbles: true}));
+            });
+        });
+    };
+
+    return {
+        init: init
+    };
+});

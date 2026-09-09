@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="question/type/muster/db" VERSION="20260906" COMMENT="XMLDB file for Moodle question/type/muster"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="qtype_muster_options" COMMENT="Ruudustiku mõõtmed ühe mustri-küsimuse kohta.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"
+               COMMENT="Viide {question}.id."/>
+        <FIELD NAME="gridwidth" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="4" SEQUENCE="false"/>
+        <FIELD NAME="gridheight" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="4" SEQUENCE="false"/>
+        <FIELD NAME="cellsize" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="32" SEQUENCE="false"
+               COMMENT="Ruudu kulje pikkus pikslites - opetaja saab muuta."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="questionid" TYPE="foreign-unique" FIELDS="questionid" REFTABLE="question" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="qtype_muster_palette" COMMENT="Ühe küsimuse värvide/piltide valik, millega ruute täidetakse.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"
+               COMMENT="Viide {question}.id."/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="coltype" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="colour" SEQUENCE="false"
+               COMMENT="'colour', 'image' voi 'symbol'."/>
+        <FIELD NAME="colourvalue" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"
+               COMMENT="Nt #ff0000. Täidetud, kui coltype = colour."/>
+        <FIELD NAME="symbolvalue" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"
+               COMMENT="Kirjamark/sumbol (nt A, X, tahemuudukas). Taidetud, kui coltype = symbol."/>
+        <FIELD NAME="itemlabel" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="questionid" TYPE="foreign" FIELDS="questionid" REFTABLE="question" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="questionid_sortorder" UNIQUE="false" FIELDS="questionid, sortorder"/>
+      </INDEXES>
+    </TABLE>
+
+    <TABLE NAME="qtype_muster_comments" COMMENT="Õpetaja kommentaarid/märgistused ühe katse (ka pooleliolev) kohta.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="questionattemptid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"
+               COMMENT="Viide {question_attempts}.id."/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"
+               COMMENT="Kommentaari autor (õpetaja)."/>
+        <FIELD NAME="cellrow" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"
+               COMMENT="NULL, kui kommentaar ei puuduta konkreetset ruutu."/>
+        <FIELD NAME="cellcol" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="commenttext" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="commenttextformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="questionattemptid" TYPE="foreign" FIELDS="questionattemptid" REFTABLE="question_attempts" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="questionattemptid_timecreated" UNIQUE="false" FIELDS="questionattemptid, timecreated"/>
+      </INDEXES>
+    </TABLE>
+
+    <TABLE NAME="qtype_muster_presets" COMMENT="Admini poolt loodud baasvalikute (paleti mallide) nimekiri.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="qtype_muster_preset_items" COMMENT="Ühe baasvaliku (preset) värvid/sümbolid.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="presetid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"
+               COMMENT="Viide {qtype_muster_presets}.id."/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="coltype" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="colour" SEQUENCE="false"
+               COMMENT="'colour' voi 'symbol'."/>
+        <FIELD NAME="colourvalue" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="symbolvalue" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="itemlabel" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="presetid" TYPE="foreign" FIELDS="presetid" REFTABLE="qtype_muster_presets" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="presetid_sortorder" UNIQUE="false" FIELDS="presetid, sortorder"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>
