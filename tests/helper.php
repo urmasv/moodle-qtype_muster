@@ -18,9 +18,6 @@
  * Testiabiklass qtype_muster jaoks, struktuur qtype_essay_test_helper
  * (tests/helper.php) eeskujul.
  *
- * NB: see on ainult minimaalne kohatäide, mitte täielik testikomplekt -
- * ühiktestid tuleb kirjutada eraldi vastavalt Moodle'i PHPUnit juhendile.
- *
  * @package    qtype_muster
  * @copyright  2026 Urmas Vessin
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
