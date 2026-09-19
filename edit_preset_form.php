@@ -56,8 +56,6 @@ class qtype_muster_edit_preset_form extends moodleform {
         $rowelements[] = $mform->createElement('text', 'palette_itemlabel', '',
             ['size' => 16, 'placeholder' => get_string('itemlabel', 'qtype_muster')]);
 
-        // Grupi silt jääb tühjaks - vt edit_muster_form.php sama koha
-        // kommentaari.
         $rowgroup = $mform->createElement('group', 'palette_item_group',
             '', $rowelements, ' ', false);
         $itemarray = [$rowgroup];
