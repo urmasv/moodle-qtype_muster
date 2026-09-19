@@ -20,10 +20,7 @@
  * Vastutab: küsimuse lisaandmete (ruudustiku mõõtmed, taustapilt,
  * värvide/sümbolite valik) laadimise, salvestamise ja kustutamise eest.
  * Mudel on üles ehitatud qtype_essay ja qtype_multichoice questiontype.php
- * eeskujul (kontrollitud moodle/moodle GitHubi lähtekoodist küsimuse.php
- * osas; questiontype.php struktuur järgib nende üldist, laialt
- * dokumenteeritud mustrit - testi see päris Moodle'i peal üle enne
- * tootmisesse viimist).
+ * eeskujul.
  *
  * @package    qtype_muster
  * @copyright  2026 Urmas Vessin
@@ -119,13 +116,7 @@ class qtype_muster extends question_type {
             ['subdirs' => 0, 'maxfiles' => 1, 'accepted_types' => ['web_image']]
         );
 
-        // Värvide/sümbolite valik: kustutame vanad read ja kirjutame uued -
-        // lihtsam ja usaldusväärsem kui olemasolevaid ridu proovida
-        // sobitada. Järjekord tuleb otse massiivi indeksist - klientipoolne
-        // lohistamise JS (amd/src/reorder.js) kirjutab enne esitamist iga
-        // rea väljade name="...[N]" indeksi ümber vastavalt uuele
-        // visuaalsele järjekorrale, nii et $i käik siin ongi juba õige
-        // lõplik järjekord.
+        // Värvide/sümbolite valik.
         $DB->delete_records('qtype_muster_palette', ['questionid' => $question->id]);
 
         $repeats = $question->paletterepeats ?? 0;
