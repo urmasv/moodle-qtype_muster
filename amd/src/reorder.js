@@ -17,25 +17,6 @@
  * Lohistamisega ridade ümberjärjestamine qtype_muster paleti/baasvaliku
  * redigeerimisvormides (edit_muster_form.php ja edit_preset_form.php).
  *
- * PÕHIMÕTE: kõik "palette_item_group" read (palette_coltype[N] valikuvälja
- * järgi tuvastatud) analüüsitakse KORRAGA (vt detectRowsAndContainer()) -
- * otsitakse tasandit, kus iga rida sisaldab oma indeksi väärtusi JA kõik
- * read jagavad sama otsest vanemat. See on tahtlikult struktuurist
- * sõltumatu: varasemad katsed eeldasid kindlat "N taset üles" reeglit
- * (nt ".closest('.fitem')" või "üks tase felement'ilt fitem'ile"), aga
- * need eeldused osutusid valeks - kord tabas liiga kitsa ala (liigutas
- * ainult "tüüp" välja), kord kaotas rida oma vahekauguse (liigutas
- * "felement'i", mitte "fitem'it"), kord andis esimesele reale teistsuguse
- * vanema kui ülejäänutele (mistõttu kõik lohistamised kukkusid esimese
- * rea sisse). Rea ette lisatav käepide (".muster-drag-handle") kuulab
- * pointerdown't; pointermove'i käigus liigutatakse rida DOM-is otse ümber
- * vastavalt kursori asukohale teiste ridade suhtes. Pointerup'i
- * (lohistamise lõpu) korral kirjutatakse KÕIGI ridade sisendväljade
- * name="...[N]" indeksid ümber vastavalt uuele DOM-järjekorrale - see
- * ongi ainuke, mis serveripoolseks salvestamiseks loeb (vt
- * questiontype.php/editpreset.php, mis loevad massiivi lihtsalt
- * indeksite järjekorras).
- *
  * "Add {no} more" nupp (repeat_elements'i noSubmit nupp) põhjustab kogu
  * lehe uuestilaadimise, nii et init() käivitub selle järel niikuinii
  * uuesti värske reana loenduriga.
@@ -111,8 +92,7 @@ define([], function() {
      * Nihutab "Lisa N elementi juurde" nupu (repeat_elements'i enda
      * noSubmit nupp) alati ridade loendi kõige lõppu. See nupp EI kanna
      * ".muster-draggable-row" klassi, mistõttu lohistamine võib ridu
-     * sellest mööda liigutada, jättes nupu üksinda ridade vahele - just
-     * see, mis nähti tühja "auguna" ridade vahel.
+     * sellest mööda liigutada, jättes nupu üksinda ridade vahele.
      *
      * @param {Element} container
      */
