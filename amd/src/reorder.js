@@ -17,15 +17,6 @@
  * Lohistamisega ridade ümberjärjestamine qtype_muster paleti/baasvaliku
  * redigeerimisvormides (edit_muster_form.php ja edit_preset_form.php).
  *
- * TEINE VERSIOON: esimene katse kasutas natiivset HTML5 drag-and-drop
- * API-t (dragstart/dragover/dataTransfer), mis osutus ebausaldusväärseks -
- * see API on tuntud oma ebaühtlase käitumise poolest just vormiväljadega
- * ridade peal (erinevused brauserite vahel, konfliktid sisendväljade oma
- * fookuse/valiku käitumisega). See versioon kasutab selle asemel Pointer
- * Events'i (pointerdown/pointermove/pointerup) - lihtne, otsene DOM-
- * manipulatsioon ilma dataTransfer'ita, mida kasutavad ka enamik
- * populaarseid lohistamis-teeke samal põhjusel.
- *
  * PÕHIMÕTE: kõik "palette_item_group" read (palette_coltype[N] valikuvälja
  * järgi tuvastatud) analüüsitakse KORRAGA (vt detectRowsAndContainer()) -
  * otsitakse tasandit, kus iga rida sisaldab oma indeksi väärtusi JA kõik
@@ -48,8 +39,6 @@
  * "Add {no} more" nupp (repeat_elements'i noSubmit nupp) põhjustab kogu
  * lehe uuestilaadimise, nii et init() käivitub selle järel niikuinii
  * uuesti värske reana loenduriga.
- *
- * MÄRKUS: testimata pärismoodle keskkonnas.
  *
  * @module     qtype_muster/reorder
  * @copyright  2026 Urmas Vessin
@@ -86,12 +75,6 @@ define([], function() {
      * järgi. Leiab (praeguses DOM-järjekorras) ESIMESE rea, mille
      * keskpunkt on kursorist allpool, ja paigutab lohistatava rea sellele
      * vahetult ette; kui kõik read on kursorist ülalpool, paigutab lõppu.
-     *
-     * MÄRKUS - varasem viga: eelmine versioon peatus esimesel real, mis
-     * vastas lõdvale "kursor on rea keskpunktist allpool" tingimusele -
-     * see on peaaegu alati tõene juba esimese rea jaoks, niipea kui
-     * kursor on üldse allapoole liikunud, mistõttu rida hüppas korduvalt
-     * "kohe pärast esimest rida", sõltumata kursori tegelikust asukohast.
      *
      * @param {PointerEvent} e
      */
@@ -172,17 +155,6 @@ define([], function() {
      * välju JA (b) kõigi ridade element sellel TASANDIL jagab sama otsest
      * vanemat (st on tegelikult üksteise vennad-õed DOM-is).
      *
-     * TAUST - miks nii keeruliselt: varasemad katsed eeldasid kindlat
-     * "mine N taset üles" reeglit (nt "üks tase felement'ilt fitem'ile"),
-     * kuid see osutus valeks just ESIMESE rea jaoks - selle tegelik
-     * ühine vanem teiste ridadega asub teisel sügavusel kui ülejäänud
-     * ridade oma, mistõttu kõik lohistamised "kukkusid" esimese rea (vale)
-     * ümbrise sisse. Selle asemel proovime siin läbi KÕIK sügavused
-     * korraga kõigi ridade peale ja valime esimese (kõige madalama)
-     * sügavuse, kus tingimused (a) ja (b) kehtivad üheaegselt kõigi
-     * ridade jaoks - see ei eelda enam midagi Moodle'i konkreetse
-     * struktuuri kohta.
-     *
      * @param {NodeList} markers palette_coltype[N] valikuväljad
      * @return {Object|null} {rows: Array, container: Element}
      */
@@ -250,9 +222,7 @@ define([], function() {
      * Joondab paleti read sama taandega, mis on tavapärastel siltidega
      * vormiväljadel (nt "Ruudustiku laius" või baasvaliku "Nimi") -
      * mõõdab TEGELIKU pikslinihke otse ekraanilt, selle asemel et
-     * eeldada mingit kindlat Moodle'i/teema CSS-klassi või -struktuuri
-     * (varasem katse panna grupi sildiks '&nbsp;' selle klassinime-
-     * eelduse tõttu ei toiminud).
+     * eeldada mingit kindlat Moodle'i/teema CSS-klassi või -struktuuri.
      *
      * @param {Array} rows
      */
