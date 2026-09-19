@@ -206,15 +206,6 @@ class qtype_muster_renderer extends qtype_renderer {
     /**
      * Leiab küsimuse taustapildi URL-i, kui pilt on üles laetud.
      *
-     * Ruudustiku suurus EI sõltu enam pildi mõõtmetest (vt cellsize
-     * question.php-s) - seetõttu pole pildi loomulikke mõõtmeid vaja
-     * lugeda, ainult URL.
-     *
-     * KRIITILINE: question_pluginfile() (core, lib/questionlib.php)
-     * eeldab, et $args esimene element on kas küsimuse KATSE kasutuse id
-     * (qubaid) või sõna 'preview' - mitte lihtsalt küsimuse enda id.
-     * Seetõttu ehitame itemid-i mitmeosalisena: "{usageid}/{slot}/{questionid}".
-     *
      * @param question_attempt $qa
      * @param question_definition $question
      * @return array{url: string}|null
@@ -303,12 +294,6 @@ class qtype_muster_renderer extends qtype_renderer {
         );
     }
 
-    /**
-     * NB: lihtsustatud - kontekst tuleks küsida läbi $qa/$question kaudu,
-     * mitte globaalselt $PAGE->context'ist, kui renderdamine toimub väljaspool
-     * tavapärast lehekonteksti (nt pistikprogrammiliselt). Vaata üle enne
-     * kasutuselevõttu, eriti quiz'i review vs preview kontekstides.
-     */
     protected function get_current_context() {
         global $PAGE;
         return $PAGE->context ?? null;
