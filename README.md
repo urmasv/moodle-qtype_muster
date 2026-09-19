@@ -1,5 +1,7 @@
 # qtype_muster ("Muster")
 
+![Moodle plugin CI](https://github.com/urmasv/moodle-qtype_muster/actions/workflows/ci.yml/badge.svg)
+
 *[Eesti keel](#qtype_muster-muster) | [English](#qtype_muster-muster-1)*
 
 Moodle'i küsimusetüüp, kus õpilane täidab õpetaja määratud suurusega
