@@ -19,18 +19,6 @@
  * ei peaks värvikoodi peast teadma. Numbrite (#RRGGBB) järgi sisestamine
  * jääb endiselt võimalikuks - see on täiendus, mitte asendus.
  *
- * TEINE VERSIOON: esimene katse lisas värvivalija UUE ELEMENDINA rea
- * (palette_item_group) flex-voogu, mis rikkus rea paigutuse - element
- * murdus kas rea alla või kohale, sõltuvalt lisamiskohast, kuna rea
- * flex-konteineril polnud selle jaoks ruumi ette nähtud. See versioon
- * ei lisa rea flex-voogu ÜHTEGI uut elementi: mähib tekstivälja väikesse
- * "position: relative" ümbrisesse ja paigutab värvivalija selle SISSE
- * "position: absolute" abil, ülekattes tekstivälja enda vasaku servaga -
- * ümbriku enda suurus vastab endiselt lihtsalt tekstivälja suurusele,
- * nii et rea flex-paigutus ei muutu üldse.
- *
- * MÄRKUS: testimata pärismoodle keskkonnas.
- *
  * @module     qtype_muster/colourpicker
  * @copyright  2026 Urmas Vessin
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -48,9 +36,6 @@ define([], function() {
             var coltypeSelect = match ?
                 document.querySelector('select[name="palette_coltype[' + match[1] + ']"]') : null;
 
-            // Mähime tekstivälja ümbrisesse - see EI LISA rea flex-voogu
-            // uut elementi, kuna ümbriku suurus vastab lihtsalt
-            // tekstivälja enda suurusele (display: inline-block).
             var wrapper = document.createElement('span');
             wrapper.style.position = 'relative';
             wrapper.style.display = 'inline-block';
@@ -58,7 +43,6 @@ define([], function() {
             textInput.parentNode.insertBefore(wrapper, textInput);
             wrapper.appendChild(textInput);
 
-            // Ruumi tegemiseks värvivalijale nihutame teksti veidi paremale.
             textInput.style.paddingLeft = '1.8em';
 
             var picker = document.createElement('input');
