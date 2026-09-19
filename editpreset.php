@@ -68,10 +68,6 @@ if ($mform->is_cancelled()) {
         $DB->update_record('qtype_muster_presets', $preset);
     }
 
-    // Kirjutame üle kõik elemendid - lihtsam ja usaldusväärsem kui
-    // olemasolevaid ridu proovida sobitada. Järjekord tuleb massiivi
-    // indeksist - lohistamise JS kirjutab enne esitamist väljade
-    // name="...[N]" indeksid ümber vastavalt uuele visuaalsele järjekorrale.
     $DB->delete_records('qtype_muster_preset_items', ['presetid' => $preset->id]);
 
     $repeats = $data->paletterepeats ?? 0;
