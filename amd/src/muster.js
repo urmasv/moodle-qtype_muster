@@ -71,11 +71,6 @@ define([], function() {
             return;
         }
 
-        // NB: grid.parentNode on nüüd ".muster-grid-outer" (ümbritseb
-        // ruudustikku + taustapildi lülitit), MITTE see jagatud konteiner,
-        // kus asub ka palett (".muster-palette" on "outer" enda vend, mitte
-        // laps) - seetõttu tuleb palett leida "outer" vanemast, mitte
-        // "grid" enda otsesest vanemast.
         var container = outer.parentNode;
         var palette = container.querySelector('[data-role="muster-palette"]');
         var selectedPaletteId = null;
