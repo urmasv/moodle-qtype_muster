@@ -22,11 +22,6 @@
  * uuendab Moodle'i tavapärane quiz autosave / vormi esitus (vt question.php
  * ja renderer.php kommentaarid).
  *
- * TÄIDETUD RUUDUD ON ALATI TÄISOPAAKSED (ka taustapildiga ruudustikul) -
- * varasem katse muuta need taustapildi puhul pooleldi läbipaistvaks
- * eemaldati, kuna täidetud ruut peab katma taustapilti, mitte läbi
- * paistma (vt renderer.php sama põhimõtet).
- *
  * @module     qtype_muster/muster
  * @copyright  2026 Urmas Vessin
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
