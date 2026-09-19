@@ -66,20 +66,14 @@ class qtype_muster_edit_form extends question_edit_form {
         $mform->addElement('static', 'gridsizehint', '',
             get_string('gridsizehint', 'qtype_muster', $maxdimension));
 
-        // Taustapilt - ÜKS failihaldur (mitte repeat_elements() sees, nagu
-        // varasem eemaldatud pilditugi paletis), mistõttu ei puutu kokku
-        // sama filemanager+repeat_elements veaga. Ruudustiku mõõtmed
-        // tulevad alati ruudu suurusest (cellsize) x veergude/ridade
-        // arvust, MITTE pildi enda mõõtmetest - pilt on ainult õrn
-        // taustakiht, mis ei mõjuta ruudustiku ennast (vt renderer.php).
+        // Taustapilt. 
         $mform->addElement('filemanager', 'backgroundimage',
             get_string('backgroundimage', 'qtype_muster'), null,
             $this->get_filemanager_options());
 
         // Taustapildi näitamise/peitmise lüliti (vt muster.js) on mõeldud
         // vastaja/hindaja jaoks vaates, mitte õpetaja redigeerimisvormis -
-        // siin eraldi vihjeteksti EI kuvata (varem oli pikk selgitus, mis
-        // eemaldati, kuna seda polnud küsitud).
+        // siin eraldi vihjeteksti ei kuvata.
 
         // Baasvaliku (preset) laadimine - ainult siis, kui admin on
         // vähemalt ühe baasvaliku loonud (question/type/muster/managepresets.php).
@@ -123,23 +117,13 @@ class qtype_muster_edit_form extends question_edit_form {
         $rowelements[] = $mform->createElement('text', 'palette_itemlabel', '',
             ['size' => 16, 'placeholder' => get_string('itemlabel', 'qtype_muster')]);
 
-        // Grupi silt jääb tühjaks - taane teiste väljadega joondatakse
-        // otse JS-iga (vt amd/src/reorder.js alignRowsIndent()), kuna
-        // katse säilitada Moodle'i sildiveerg '&nbsp;' abil ei toiminud.
         $rowgroup = $mform->createElement('group', 'palette_item_group',
             '', $rowelements, ' ', false);
         $palettearray = [$rowgroup];
 
         $repeatedoptions = [];
         $repeatedoptions['palette_colourvalue']['type'] = PARAM_RAW;
-        // MÄRKUS: siin EI kasutata addRule()/'rule' valikut #RRGGBB kuju
-        // kontrolliks, kuna see element on grupi sees ('palette_item_group')
-        // - grupi sees oleva elemendi tavapärane addRule() tekitab
-        // Moodle'is tuntud vea "PEAR::getStaticProperty() cannot be called
-        // statically" (MDL-41908, vana QuickForm/PEAR koodi viga). Grupi
-        // sees valideerimine nõuaks addGroupRule() kasutamist, mis on
-        // keerulisem ja omab sarnaseid tuntud probleeme - seetõttu jääb
-        // #RRGGBB kuju kontroll ainult serveripoolseks (vt validation()).
+
         $repeatedoptions['palette_symbolvalue']['type'] = PARAM_TEXT;
         $repeatedoptions['palette_itemlabel']['type'] = PARAM_TEXT;
 
@@ -151,10 +135,6 @@ class qtype_muster_edit_form extends question_edit_form {
         // alles ja lisame baasvaliku read nende JÄRELE. Soovimatud read saab
         // õpetaja hiljem lihtsalt tühjaks jätta/kustutada, järjekorda saab
         // pärast lisamist lohistades muuta.
-        //
-        // KRIITILINE: moodleform loeb $_POST vormi väljadesse
-        // (_process_submission()) alles PÄRAST definition_inner() lõppu, nii
-        // et see on ainus koht, kus lisatud read reaalselt "kinnistuvad".
         if ($presetitemstoinject !== null) {
             $existingcoltype = $_POST['palette_coltype'] ?? [];
             $existingcolour = $_POST['palette_colourvalue'] ?? [];
