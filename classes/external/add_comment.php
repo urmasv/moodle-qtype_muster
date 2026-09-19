@@ -58,8 +58,8 @@ class add_comment extends external_api {
             'cellcol' => $cellcol,
         ]);
 
-        // Leiame konteksti, milles see katse toimub (question_usages.contextid),
-        // et saaks kontrollida õigust JA valideerida konteksti (turvanõue).
+        // Leiab konteksti, milles see katse toimub (question_usages.contextid),
+        // et saaks kontrollida õigust JA valideerida konteksti.
         $sql = "SELECT qu.contextid
                   FROM {question_attempts} qa
                   JOIN {question_usages} qu ON qu.id = qa.questionusageid
