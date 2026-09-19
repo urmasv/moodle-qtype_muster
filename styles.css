@@ -1,6 +1,4 @@
-/* qtype_muster stiilid. Selektorid on eesliidetud .que.muster - vt
-   Moodle'i dev-dokumentatsiooni nõuet, et stiilid ei lekiks teistele
-   küsimusetüüpidele. */
+/* qtype_muster stiilid. */
 
 .que.muster .muster-palette {
     display: flex;
