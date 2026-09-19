@@ -27,11 +27,6 @@
  * automaatselt (sama mehhanism, mida kasutavad core'i qtype'id oma
  * definitsiooni-tasandi failide jaoks, nt essay 'graderinfo').
  *
- * MÄRKUS - kontrolli enne kasutuselevõttu:
- * {qtype_muster_comments} taastamine (õpilaste katsete kommentaarid) EI
- * OLE siin kaetud - vt backup_qtype_muster_plugin.class.php ülaosa
- * kommentaari.
- *
  * @package    qtype_muster
  * @copyright  2026 Urmas Vessin
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
