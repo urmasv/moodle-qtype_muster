@@ -78,9 +78,6 @@ class qtype_muster_question extends question_with_responses {
     }
 
     public function is_complete_response(array $response) {
-        // ELUS OTSUS: "täielikuks" loetakse vastus, kui vähemalt üks ruut on
-        // täidetud (loominguline töö, ei nõua kogu ruudustiku täitmist).
-        // Kohanda, kui soovid nõuda kõigi ruutude täitmist.
         $state = $this->decode_gridstate($response);
         return count($state) > 0;
     }
@@ -121,8 +118,7 @@ class qtype_muster_question extends question_with_responses {
      * Struktuur (component/filearea kontroll, seejärel parent:: fallback)
      * kontrollitud qtype_gapselect (questionbase.php) ja qtype_coderunner
      * (question.php) lähtekoodist - vt ka renderer.php varasemat sama
-     * mustrit paleti piltide jaoks (mis hiljem eemaldati, aga mehhanism
-     * ise oli õige).
+     * mustrit paleti piltide jaoks.
      *
      * @param question_attempt $qa
      * @param question_display_options $options
