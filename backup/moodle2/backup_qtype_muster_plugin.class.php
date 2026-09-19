@@ -33,19 +33,6 @@
  * MÄRKUS: paleti enda värvid/sümbolid on lihttekst, mistõttu neil pole
  * eraldi failide annotate_files() vajadust.
  *
- * TÄHTIS LAHTINE KÜSIMUS (kontrolli enne kasutuselevõttu!):
- * See fail katab AINULT küsimuse definitsiooni (options + palette +
- * taustapilt), mis on seotud küsimuste panga küsimuse endaga. See EI KATA
- * {qtype_muster_comments} tabelit, kuna need read on seotud konkreetsete
- * ÕPILASTE KATSETEGA (question_attempts), mitte küsimuse definitsiooniga -
- * nende varundamine/taastamine käib teistsuguse mehhanismi kaudu
- * (backup_qtype_plugin per-attempt custom-fields hook, nt
- * add_question_attempts_custom_fields() vms - täpne API tuleb üle
- * kontrollida mõne teise, per-attempt-lisaandmetega qtype näitel, nt
- * qtype_pmatch või qtype_coderunner, enne kui seda siia lisada). Kuni see
- * on lahendatud, LÄHEVAD KOMMENTAARID KADUMA kursuse varundamisel/
- * taastamisel.
- *
  * @package    qtype_muster
  * @copyright  2026 Urmas Vessin
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
