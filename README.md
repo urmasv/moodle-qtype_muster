@@ -1,5 +1,7 @@
 # qtype_muster ("Muster")
 
+*[Eesti keel](#qtype_muster-muster) | [English](#qtype_muster-muster-1)*
+
 Moodle'i küsimusetüüp, kus õpilane täidab õpetaja määratud suurusega
 ruudustikku ükshaaval, kasutades õpetaja (või administraatori loodud
 baasvaliku) määratud värve ja/või kirjamärke. Küsimus on mõeldud
@@ -85,3 +87,96 @@ päris-Moodle keskkonnas enne avalikku/tootmislikku kasutust:
 ## Litsents
 
 GNU General Public License v3 või uuem - vt fail `LICENSE`.
+
+---
+
+# qtype_muster ("Muster")
+
+*[Eesti keel](#qtype_muster-muster) | [English](#qtype_muster-muster-1)*
+
+A Moodle question type where the student fills a teacher-defined grid,
+one cell at a time, using colours and/or characters defined by the
+teacher (or loaded from an administrator-created base set). The question
+is intended for creative/free-form work and is always graded manually,
+as a binary pass/fail.
+
+## Features
+
+- The teacher sets the grid's width and height (in cells) and the cell
+  side length in pixels; the administrator can cap the maximum grid size
+  allowed.
+- The palette consists of colours and/or characters/symbols; rows can be
+  reordered by drag-and-drop, each row's type (colour/symbol) is chosen
+  separately, and the matching input field is shown conditionally.
+- The administrator can create reusable **base sets** (ready-made
+  colour/symbol collections) that a teacher can **add** to their own
+  question's palette (never an automatic replacement), and can then
+  freely edit after adding.
+- Optional **background image**: placed under the whole grid at 30%
+  opacity; the cell size (not the image's dimensions) determines the
+  grid's size. Filled cells are always fully opaque. Both the respondent
+  and the grader can toggle the background image on/off independently;
+  when off, the grid looks exactly as it would without a background
+  image.
+- The teacher can see and comment on the student's work while it is
+  still **in progress** (not yet submitted) - this uses a dedicated
+  `qtype/muster:comment` capability and an AJAX-driven comment block that
+  does not depend on the attempt's submission state.
+- Grading is always manual (`qbehaviour_manualgraded`): the teacher can
+  optionally comment, then mark the whole attempt as pass or fail.
+
+## Requirements
+
+- Moodle 5.0 or later (`$plugin->requires = 2025041400`). Developed and
+  tested with a Moodle 5.2 environment in mind.
+
+## Installation
+
+1. Copy the plugin's contents into the `question/type/muster/` directory
+   of your Moodle installation.
+2. Open "Site administration > Notifications" to run the database
+   installation routine.
+3. If needed, configure the maximum grid size and/or add colour/symbol
+   base sets under "Site administration > Plugins > Question types >
+   Muster".
+
+## Administrator settings and capabilities
+
+- **Maximum grid size** (`qtype_muster/maxgriddimension`, default 30) -
+  limits how large a grid a teacher can create.
+- **Base set management** (`question/type/muster/managepresets.php`) - a
+  separate page (not an $ADMIN tree node), access gated by the
+  `moodle/question:config` capability.
+- **`qtype/muster:comment`** - the capability to add comments to Muster
+  question attempts (including in-progress ones); granted by default to
+  the editingteacher, teacher and manager roles at the module context
+  level.
+
+## Known limitations (review before production use)
+
+The plugin is currently `MATURITY_ALPHA` (version 0.1.0). The following
+limitations are documented as comments in the code itself, but need to
+be confirmed in a real Moodle environment before public/production use:
+
+- **Backup/restore**: the `qtype_muster_comments` table (teacher
+  comments on attempts) is NOT covered by course backup/restore -
+  comments are lost when a course is backed up/restored. Only the
+  question's own definition (grid dimensions, palette, background image)
+  is covered.
+- **Privacy API (GDPR)**: `classes/privacy/provider.php` only covers the
+  comment AUTHOR's (teacher's) data. The comment SUBJECT (the student
+  whose work was commented on) is not directly covered - if required, a
+  joined query through the relevant activity module needs to be added.
+- **Comment permission checks** in the renderer (`renderer.php`,
+  `get_current_context()`) use `$PAGE->context` as a simplification -
+  this should be reviewed for the different contexts of question preview
+  versus attempt review.
+- **The drag-and-drop reordering JS** (`amd/src/reorder.js`) has only
+  been tested manually, in a real Moodle environment via screenshots -
+  no automated tests have been written for it.
+- **Comments are plain text only** (FORMAT_PLAIN, a plain `<textarea>`) -
+  rich text or image attachments in comments are not supported.
+
+## Licence
+
+GNU General Public License v3 or later - see the `LICENSE` file.
