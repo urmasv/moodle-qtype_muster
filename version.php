@@ -32,8 +32,7 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->version   = 2026090806;
 // Moodle 5.0.0 väljalaskeversioon on 2025041400 (kontrollitud moodledev.io andmetest).
 // Sihtkeskkond on Moodle 5.2, aga alammääraks on siin seatud 5.0, kuna plugin ei kasuta
-// (praeguses kavandis) 5.1/5.2-spetsiifilisi API-sid. Kui hiljem kasutatakse uuemaid API-sid,
-// tuleb see väärtus vastavalt tõsta.
+// (praeguses kavandis) 5.1/5.2-spetsiifilisi API-sid.
 $plugin->requires  = 2025041400;
 $plugin->component = 'qtype_muster';
 $plugin->maturity  = MATURITY_ALPHA;
