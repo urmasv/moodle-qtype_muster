@@ -27,11 +27,6 @@
  * eemaldati, kuna täidetud ruut peab katma taustapilti, mitte läbi
  * paistma (vt renderer.php sama põhimõtet).
  *
- * KRIITILINE: kustutamisel EI tohi kasutada cell.removeAttribute('style'),
- * kuna ruudu suurus (cellsize, õpetaja määratud) on samuti inline-stiilis
- * (vt renderer.php render_cell()) - kogu style eemaldamine kaotaks ka
- * ruudu suuruse, mitte ainult värvi.
- *
  * @module     qtype_muster/muster
  * @copyright  2026 Urmas Vessin
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -118,8 +113,7 @@ define([], function() {
                 var key = cell.getAttribute('data-row') + '_' + cell.getAttribute('data-col');
 
                 if (selectedPaletteId === '') {
-                    // Kustutamise tööriist - eemaldame ainult värvi/sisu,
-                    // MITTE kogu style't (see sisaldab ka ruudu suurust).
+                    // Kustutamise tööriist - eemaldame värvi/sisu.
                     delete state[key];
                     cell.style.backgroundColor = '';
                     cell.removeAttribute('data-paletteid');
