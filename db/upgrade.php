@@ -86,9 +86,6 @@ function xmldb_qtype_muster_upgrade($oldversion) {
     }
 
     if ($oldversion < 2026090801) {
-        // gridimageheight eemaldati - õpetaja käsitsi kõrguse ülekirjutust
-        // ei olnud tegelikult küsitud/vajatud. Taustapildi kõrgus arvutatakse
-        // alati automaatselt pildi enda proportsioonist (vt renderer.php).
         $table = new xmldb_table('qtype_muster_options');
         $field = new xmldb_field('gridimageheight', XMLDB_TYPE_INTEGER, '6', null, false, false, null, 'gridheight');
 
@@ -100,9 +97,6 @@ function xmldb_qtype_muster_upgrade($oldversion) {
     }
 
     if ($oldversion < 2026090803) {
-        // cellsize: ruudu külje pikkus pikslites. Ruudustiku suurus
-        // (nii taustapildiga kui ilma) tuletatakse sellest, mitte
-        // taustapildi enda mõõtmetest.
         $table = new xmldb_table('qtype_muster_options');
         $field = new xmldb_field('cellsize', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, 32, 'gridheight');
 
