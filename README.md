@@ -1,7 +1,5 @@
 # qtype_muster ("Muster")
 
-![Moodle plugin CI](https://github.com/urmasv/moodle-qtype_muster/actions/workflows/ci.yml/badge.svg)
-
 *[Eesti keel](#qtype_muster-muster) | [English](#qtype_muster-muster-1)*
 
 Moodle'i küsimusetüüp, kus õpilane täidab õpetaja määratud suurusega
@@ -59,36 +57,6 @@ binaarselt (arvestatud / mittearvestatud).
 - **`qtype/muster:comment`** - õigus lisada kommentaare mustri küsimuse
   katsetele (sh poolelioleavtele); vaikimisi antud rollidele
   editingteacher, teacher ja manager mooduli tasandil.
-
-## Teadaolevad piirangud (enne tootmiskasutust üle vaadata)
-
-Plugin on hetkel `MATURITY_ALPHA` (versioon 0.1.0). Järgnevad piirangud on
-koodis endas kommentaaridena dokumenteeritud, kuid vajavad kinnitamist
-päris-Moodle keskkonnas enne avalikku/tootmislikku kasutust:
-
-- **Varundamine/taastamine**: tabel `qtype_muster_comments` (õpetaja
-  kommentaarid katsetele) EI ole kaetud kursuse backup/restore
-  mehhanismiga - kommentaarid lähevad kursuse varundamisel/taastamisel
-  kaduma. Ainult küsimuse enda definitsioon (ruudustiku mõõtmed, palett,
-  taustapilt) on kaetud.
-- **Privacy API (GDPR)**: `classes/privacy/provider.php` katab ainult
-  kommentaari AUTORI (õpetaja) andmed. Kommentaari SUBJEKT (õpilane,
-  kelle tööd kommenteeriti) ei ole otseselt kaetud - kui see on nõutav,
-  tuleb lisada liitpäring läbi vastava tegevusmooduli.
-- **Kommentaaride õiguste kontroll** väljundis (`renderer.php`,
-  `get_current_context()`) kasutab lihtsustatult `$PAGE->context` - tuleb
-  üle kontrollida küsimuse eelvaate (preview) ja katse ülevaate (review)
-  eri kontekstide korral.
-- **Lohistamisega ümberjärjestamise JS** (`amd/src/reorder.js`) on
-  testitud ainult käsitsi, päris-Moodle keskkonnas ekraanipiltide kaudu -
-  automatiseeritud teste sellele pole kirjutatud.
-- **Kommentaarid on ainult lihttekst** (FORMAT_PLAIN, tavaline
-  `<textarea>`) - rikastekst ega pildi lisamine kommentaarina pole
-  toetatud.
-
-## Litsents
-
-GNU General Public License v3 või uuem - vt fail `LICENSE`.
 
 ---
 
@@ -153,32 +121,3 @@ as a binary pass/fail.
   question attempts (including in-progress ones); granted by default to
   the editingteacher, teacher and manager roles at the module context
   level.
-
-## Known limitations (review before production use)
-
-The plugin is currently `MATURITY_ALPHA` (version 0.1.0). The following
-limitations are documented as comments in the code itself, but need to
-be confirmed in a real Moodle environment before public/production use:
-
-- **Backup/restore**: the `qtype_muster_comments` table (teacher
-  comments on attempts) is NOT covered by course backup/restore -
-  comments are lost when a course is backed up/restored. Only the
-  question's own definition (grid dimensions, palette, background image)
-  is covered.
-- **Privacy API (GDPR)**: `classes/privacy/provider.php` only covers the
-  comment AUTHOR's (teacher's) data. The comment SUBJECT (the student
-  whose work was commented on) is not directly covered - if required, a
-  joined query through the relevant activity module needs to be added.
-- **Comment permission checks** in the renderer (`renderer.php`,
-  `get_current_context()`) use `$PAGE->context` as a simplification -
-  this should be reviewed for the different contexts of question preview
-  versus attempt review.
-- **The drag-and-drop reordering JS** (`amd/src/reorder.js`) has only
-  been tested manually, in a real Moodle environment via screenshots -
-  no automated tests have been written for it.
-- **Comments are plain text only** (FORMAT_PLAIN, a plain `<textarea>`) -
-  rich text or image attachments in comments are not supported.
-
-## Licence
-
-GNU General Public License v3 or later - see the `LICENSE` file.
