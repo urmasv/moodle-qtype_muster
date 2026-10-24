@@ -43,7 +43,7 @@ defined('MOODLE_INTERNAL') || die();
 class backup_qtype_muster_plugin extends backup_qtype_plugin {
 
     protected function define_question_plugin_structure() {
-        $plugin = $this->get_plugin_element(null, '/questiontype', 'muster');
+        $plugin = $this->get_plugin_element(null, '../../qtype', 'muster');
 
         $pluginwrapper = new backup_nested_element($this->get_recommended_name());
         $plugin->add_child($pluginwrapper);
