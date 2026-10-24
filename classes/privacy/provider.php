@@ -60,7 +60,8 @@ defined('MOODLE_INTERNAL') || die();
 class provider implements
     \core_privacy\local\metadata\provider,
     \core_privacy\local\request\core_userlist_provider,
-    \core_privacy\local\request\plugin\provider {
+    \core_privacy\local\request\plugin\provider,
+    \core_privacy\local\request\user_preference_provider {
 
     /**
      * Kirjeldab, millist isikuandmet see plugin (lisaks core küsimuste
@@ -83,7 +84,23 @@ class provider implements
             'privacy:metadata:qtype_muster_comments'
         );
 
+        // Uue küsimuse vaikimisi hinne (question_type::save_defaults_for_new_questions()).
+        $collection->add_user_preference('qtype_muster_defaultmark', 'privacy:preference:defaultmark');
+
         return $collection;
+    }
+
+    /**
+     * Ekspordib kasutaja eelistused.
+     *
+     * @param int $userid
+     */
+    public static function export_user_preferences(int $userid) {
+        $preference = get_user_preferences('qtype_muster_defaultmark', null, $userid);
+        if (null !== $preference) {
+            $desc = get_string('privacy:preference:defaultmark', 'qtype_muster');
+            writer::export_user_preference('qtype_muster', 'defaultmark', $preference, $desc);
+        }
     }
 
     /**

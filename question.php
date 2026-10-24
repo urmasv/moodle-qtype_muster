@@ -73,8 +73,10 @@ class qtype_muster_question extends question_with_responses {
 
     public function summarise_response(array $response) {
         $state = $this->decode_gridstate($response);
-        return get_string('pluginname', 'qtype_muster') . ': ' .
-            count($state) . '/' . ($this->gridwidth * $this->gridheight) . ' ruutu täidetud';
+        return get_string('pluginname', 'qtype_muster') . ': ' . get_string('responsesummary', 'qtype_muster', (object) [
+            'filled' => count($state),
+            'total' => $this->gridwidth * $this->gridheight,
+        ]);
     }
 
     public function is_complete_response(array $response) {
@@ -130,8 +132,9 @@ class qtype_muster_question extends question_with_responses {
      */
     public function check_file_access($qa, $options, $component, $filearea, $args, $forcedownload) {
         if ($component === 'qtype_muster' && $filearea === 'background') {
-            // Taustapilt pole tundlik - kuvatakse kõigile, kes küsimust näevad.
-            return true;
+            // Taustapilt pole tundlik - kuvatakse kõigile, kes küsimust näevad,
+            // kuid ainult selle küsimuse oma (itemid = küsimuse id).
+            return reset($args) == $this->id;
         }
         return parent::check_file_access($qa, $options, $component, $filearea, $args, $forcedownload);
     }

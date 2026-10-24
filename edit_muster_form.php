@@ -135,29 +135,31 @@ class qtype_muster_edit_form extends question_edit_form {
         // alles ja lisame baasvaliku read nende JÄRELE. Soovimatud read saab
         // õpetaja hiljem lihtsalt tühjaks jätta/kustutada, järjekorda saab
         // pärast lisamist lohistades muuta.
+        $presetconstants = null;
         if ($presetitemstoinject !== null) {
-            $existingcoltype = $_POST['palette_coltype'] ?? [];
-            $existingcolour = $_POST['palette_colourvalue'] ?? [];
-            $existingsymbol = $_POST['palette_symbolvalue'] ?? [];
-            $existinglabel = $_POST['palette_itemlabel'] ?? [];
-
+            // Olemasolevad read loetakse formslib'i kaudu (mitte $_POST-ist otse).
             $nextindex = max(
-                optional_param('paletterepeats', 0, PARAM_INT),
-                count($existingcoltype)
+                $this->optional_param('paletterepeats', 0, PARAM_INT),
+                count(optional_param_array('palette_coltype', [], PARAM_ALPHA))
             );
 
+            $presetconstants = [
+                'palette_coltype' => [],
+                'palette_colourvalue' => [],
+                'palette_symbolvalue' => [],
+                'palette_itemlabel' => [],
+            ];
             foreach ($presetitemstoinject as $item) {
-                $existingcoltype[$nextindex] = $item->coltype;
-                $existingcolour[$nextindex] = $item->colourvalue ?? '';
-                $existingsymbol[$nextindex] = $item->symbolvalue ?? '';
-                $existinglabel[$nextindex] = $item->itemlabel ?? '';
+                $presetconstants['palette_coltype'][$nextindex] = $item->coltype;
+                $presetconstants['palette_colourvalue'][$nextindex] = $item->colourvalue ?? '';
+                $presetconstants['palette_symbolvalue'][$nextindex] = $item->symbolvalue ?? '';
+                $presetconstants['palette_itemlabel'][$nextindex] = $item->itemlabel ?? '';
                 $nextindex++;
             }
 
-            $_POST['palette_coltype'] = $existingcoltype;
-            $_POST['palette_colourvalue'] = $existingcolour;
-            $_POST['palette_symbolvalue'] = $existingsymbol;
-            $_POST['palette_itemlabel'] = $existinglabel;
+            // repeat_elements() võtab ridade arvu alati esitatud väljast 'paletterepeats'
+            // (moodleform::optional_param), seda ei saa API kaudu suurendada. See on ainus
+            // allesjäänud otsene kirjutus: ainult ridade arv, mitte väärtused.
             $_POST['paletterepeats'] = $nextindex;
 
             $repeatsatstart = max($repeatsatstart, $nextindex);
@@ -166,6 +168,11 @@ class qtype_muster_edit_form extends question_edit_form {
         $actualrepeats = $this->repeat_elements($palettearray, $repeatsatstart, $repeatedoptions,
             'paletterepeats', 'palette_add_fields', 1,
             get_string('addmorepaletteitems', 'qtype_muster'), true);
+
+        // Baasvaliku read täidetakse konstantidena (need on esitatud väärtustest ülimuslikud).
+        if ($presetconstants !== null) {
+            $mform->setConstants($presetconstants);
+        }
 
         // Tingimuslik kuvamine: värvi väli ainult 'colour' tüübi puhul,
         // sümboli väli ainult 'symbol' tüübi puhul.
@@ -279,7 +286,8 @@ class qtype_muster_edit_form extends question_edit_form {
             }
         }
         if (!$hasvaliditem) {
-            $errors['paletteheader'] = get_string('err_paletteempty', 'qtype_muster');
+            // Viga esimesele korduvale grupile (päis vigu ei kuva) - nagu core qtype_gapselect 'choices[0]'.
+            $errors['palette_item_group[0]'] = get_string('err_paletteempty', 'qtype_muster');
         }
 
         return $errors;

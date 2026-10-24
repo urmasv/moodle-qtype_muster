@@ -83,3 +83,7 @@ $string['privacy:metadata:qtype_muster_comments:cellcol'] = 'Ruudustiku veerg, m
 $string['privacy:metadata:qtype_muster_comments:timecreated'] = 'Kommentaari loomise aeg.';
 
 $string['muster:comment'] = 'Lisa kommentaare mustri küsimuse katsetele (sh poolelioleavtele katsetele)';
+$string['privacy:preference:defaultmark'] = 'Küsimusele määratud vaikimisi hinne.';
+$string['responsesummary'] = '{$a->filled}/{$a->total} ruutu täidetud';
+$string['err_commentempty'] = 'Kommentaar ei tohi olla tühi.';
+$string['taskcleanuporphancomments'] = 'Kustuta mustri kommentaarid, mille küsimuse katset enam pole';

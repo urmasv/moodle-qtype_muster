@@ -82,6 +82,71 @@ class restore_qtype_muster_plugin extends restore_qtype_plugin {
         if ($questioncreated) {
             $newitemid = $DB->insert_record('qtype_muster_palette', $data);
             $this->set_mapping('qtype_muster_palette', $oldid, $newitemid);
+        } else {
+            // Küsimus seoti olemasolevaga (identiteedihäsh klappis), seega on palett sama.
+            // Kaardistus on vaja katsete gridstate'i ümberkodeerimiseks (recode_response).
+            $newitemid = $DB->get_field('qtype_muster_palette', 'id',
+                ['questionid' => $data->questionid, 'sortorder' => $data->sortorder]);
+            if ($newitemid) {
+                $this->set_mapping('qtype_muster_palette', $oldid, $newitemid);
+            }
         }
+    }
+
+    /**
+     * Kodeerib katse vastuses ('gridstate') vanad paleti id-d ümber taastatud id-deks.
+     * Sama põhimõte nagu core qtype_match/multichoice recode_response().
+     *
+     * @param int $questionid
+     * @param int $sequencenumber
+     * @param array $response
+     * @return array
+     */
+    public function recode_response($questionid, $sequencenumber, array $response) {
+        if (!array_key_exists('gridstate', $response) || $response['gridstate'] === '') {
+            return $response;
+        }
+        $state = json_decode($response['gridstate'], true);
+        if (!is_array($state)) {
+            return $response;
+        }
+        $newstate = [];
+        foreach ($state as $cell => $paletteid) {
+            $newid = $this->get_mappingid('qtype_muster_palette', $paletteid);
+            $newstate[$cell] = $newid ? (string) $newid : $paletteid;
+        }
+        // Objektina, et tühi olek jääks kujule {} (JS eeldab objekti).
+        $response['gridstate'] = json_encode((object) $newstate);
+        return $response;
+    }
+
+    /**
+     * Lisab paleti backup-andmetest küsimuse andmestikku, et identiteedihäsh vastaks
+     * get_question_options() tulemusele ($question->palette). Vt core qtype_match.
+     *
+     * @param array $backupdata
+     * @return \stdClass
+     */
+    public static function convert_backup_to_questiondata(array $backupdata): \stdClass {
+        $questiondata = parent::convert_backup_to_questiondata($backupdata);
+        $palette = array_map(
+            fn($item) => (object) $item,
+            $backupdata['plugin_qtype_muster_question']['palettes']['palette'] ?? [],
+        );
+        usort($palette, fn($a, $b) => (int) $a->sortorder <=> (int) $b->sortorder);
+        $questiondata->palette = $palette;
+        return $questiondata;
+    }
+
+    /**
+     * Väljad, mis jäetakse identiteedihäshist välja (id-d ei kattu saitide vahel).
+     *
+     * @return array
+     */
+    protected function define_excluded_identity_hash_fields(): array {
+        return [
+            '/palette/id',
+            '/palette/questionid',
+        ];
     }
 }

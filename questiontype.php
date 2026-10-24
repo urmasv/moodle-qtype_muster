@@ -67,7 +67,7 @@ class qtype_muster extends question_type {
         parent::get_question_options($question);
 
         $question->options = $DB->get_record('qtype_muster_options',
-            ['questionid' => $question->id]);
+            ['questionid' => $question->id], '*', MUST_EXIST);
 
         $question->palette = $DB->get_records('qtype_muster_palette',
             ['questionid' => $question->id], 'sortorder ASC');
@@ -107,14 +107,17 @@ class qtype_muster extends question_type {
         // qtype_essay graderinfo puhul). Ei vaja eraldi DB-tabelit ega
         // -välja, kuna faili OLEMASOLU ise (component/filearea/itemid
         // kombinatsioon) on piisav info.
-        file_save_draft_area_files(
-            $question->backgroundimage,
-            $context->id,
-            'qtype_muster',
-            'background',
-            $question->id,
-            ['subdirs' => 0, 'maxfiles' => 1, 'accepted_types' => ['web_image']]
-        );
+        // XML-impordil ilma taustapildita välja pole.
+        if (isset($question->backgroundimage)) {
+            file_save_draft_area_files(
+                $question->backgroundimage,
+                $context->id,
+                'qtype_muster',
+                'background',
+                $question->id,
+                ['subdirs' => 0, 'maxfiles' => 1, 'accepted_types' => ['web_image']]
+            );
+        }
 
         // Värvide/sümbolite valik.
         $DB->delete_records('qtype_muster_palette', ['questionid' => $question->id]);
@@ -191,5 +194,112 @@ class qtype_muster extends question_type {
         $question->gridheight = $questiondata->options->gridheight;
         $question->cellsize = $questiondata->options->cellsize ?? 32;
         $question->palette = $questiondata->palette;
+    }
+
+    /**
+     * Viib taustapildi koos küsimusega uude konteksti (vt core qtype_essay graderinfo).
+     *
+     * @param int $questionid
+     * @param int $oldcontextid
+     * @param int $newcontextid
+     */
+    public function move_files($questionid, $oldcontextid, $newcontextid) {
+        parent::move_files($questionid, $oldcontextid, $newcontextid);
+        $fs = get_file_storage();
+        $fs->move_area_files_to_new_context($oldcontextid, $newcontextid,
+            'qtype_muster', 'background', $questionid);
+    }
+
+    /**
+     * Kustutab taustapildi koos küsimusega.
+     *
+     * @param int $questionid
+     * @param int $contextid
+     */
+    protected function delete_files($questionid, $contextid) {
+        parent::delete_files($questionid, $contextid);
+        $fs = get_file_storage();
+        $fs->delete_area_files($contextid, 'qtype_muster', 'background', $questionid);
+    }
+
+    /**
+     * Ekspordib küsimuse Moodle XML-vormingusse.
+     *
+     * @param object $question
+     * @param qformat_xml $format
+     * @param mixed $extra
+     * @return string
+     */
+    public function export_to_xml($question, qformat_xml $format, $extra = null) {
+        $options = $question->options;
+        $output = '';
+        $output .= "    <gridwidth>" . (int) $options->gridwidth . "</gridwidth>\n";
+        $output .= "    <gridheight>" . (int) $options->gridheight . "</gridheight>\n";
+        $output .= "    <cellsize>" . (int) $options->cellsize . "</cellsize>\n";
+
+        $output .= "    <palettes>\n";
+        foreach ($question->palette as $item) {
+            $output .= "      <palette>\n";
+            $output .= "        <coltype>" . $format->xml_escape($item->coltype) . "</coltype>\n";
+            $output .= "        <colourvalue>" . $format->xml_escape((string) $item->colourvalue) . "</colourvalue>\n";
+            $output .= "        <symbolvalue>" . $format->xml_escape((string) $item->symbolvalue) . "</symbolvalue>\n";
+            $output .= "        <itemlabel>" . $format->xml_escape((string) $item->itemlabel) . "</itemlabel>\n";
+            $output .= "      </palette>\n";
+        }
+        $output .= "    </palettes>\n";
+
+        // Taustapilt (base64), nagu core qtype_ddimageortext bgimage puhul.
+        $fs = get_file_storage();
+        $files = $fs->get_area_files($question->contextid, 'qtype_muster', 'background',
+            $question->id, 'filename', false);
+        if ($files) {
+            $output .= "    <background>\n" . $format->write_files($files) . "    </background>\n";
+        }
+
+        return $output;
+    }
+
+    /**
+     * Impordib küsimuse Moodle XML-vormingust. Tagastab vormiandmetega sama kujuga
+     * objekti, mida save_question_options() ootab.
+     *
+     * @param mixed $data
+     * @param object $question
+     * @param qformat_xml $format
+     * @param mixed $extra
+     * @return object|bool
+     */
+    public function import_from_xml($data, $question, qformat_xml $format, $extra = null) {
+        if (!isset($data['@']['type']) || $data['@']['type'] != 'muster') {
+            return false;
+        }
+
+        $qo = $format->import_headers($data);
+        $qo->qtype = 'muster';
+
+        $qo->gridwidth = (int) $format->getpath($data, ['#', 'gridwidth', 0, '#'], 4);
+        $qo->gridheight = (int) $format->getpath($data, ['#', 'gridheight', 0, '#'], 4);
+        $qo->cellsize = (int) $format->getpath($data, ['#', 'cellsize', 0, '#'], 32);
+
+        $qo->palette_coltype = [];
+        $qo->palette_colourvalue = [];
+        $qo->palette_symbolvalue = [];
+        $qo->palette_itemlabel = [];
+        $items = $format->getpath($data, ['#', 'palettes', 0, '#', 'palette'], []);
+        foreach ($items as $i => $item) {
+            $qo->palette_coltype[$i] = $format->getpath($item, ['#', 'coltype', 0, '#'], '');
+            $qo->palette_colourvalue[$i] = $format->getpath($item, ['#', 'colourvalue', 0, '#'], '');
+            $qo->palette_symbolvalue[$i] = $format->getpath($item, ['#', 'symbolvalue', 0, '#'], '');
+            $qo->palette_itemlabel[$i] = $format->getpath($item, ['#', 'itemlabel', 0, '#'], '');
+        }
+        $qo->paletterepeats = count($items);
+
+        $filexml = $format->getpath($data, ['#', 'background', 0, '#', 'file'], []);
+        $draftitemid = $format->import_files_as_draft($filexml);
+        if ($draftitemid) {
+            $qo->backgroundimage = $draftitemid;
+        }
+
+        return $qo;
     }
 }

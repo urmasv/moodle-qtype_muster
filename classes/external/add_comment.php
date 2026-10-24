@@ -71,7 +71,7 @@ class add_comment extends external_api {
         require_capability('qtype/muster:comment', $context);
 
         if (trim($params['commenttext']) === '') {
-            throw new \invalid_parameter_exception('Kommentaar ei tohi olla tühi.');
+            throw new \invalid_parameter_exception(get_string('err_commentempty', 'qtype_muster'));
         }
 
         $record = new \stdClass();

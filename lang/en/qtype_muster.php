@@ -86,3 +86,7 @@ $string['privacy:metadata:qtype_muster_comments:cellcol'] = 'The grid column the
 $string['privacy:metadata:qtype_muster_comments:timecreated'] = 'The time the comment was created.';
 
 $string['muster:comment'] = 'Add comments to Muster question attempts (including in-progress attempts)';
+$string['privacy:preference:defaultmark'] = 'The default mark set for a given question.';
+$string['responsesummary'] = '{$a->filled}/{$a->total} cells filled';
+$string['err_commentempty'] = 'The comment cannot be empty.';
+$string['taskcleanuporphancomments'] = 'Delete Muster comments whose question attempt no longer exists';

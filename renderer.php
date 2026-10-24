@@ -127,6 +127,12 @@ class qtype_muster_renderer extends qtype_renderer {
             'class' => 'muster-gridstate-input',
         ]);
 
+        if ($qa->get_state() == question_state::$invalid) {
+            $output .= html_writer::nonempty_tag('div',
+                $question->get_validation_error($response),
+                ['class' => 'validationerror']);
+        }
+
         if ($qa->get_database_id()) {
             $output .= $this->render_comments_section($qa, $options);
         }
